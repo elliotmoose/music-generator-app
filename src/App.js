@@ -14,14 +14,14 @@ function App() {
   const [playerTwo, setPlayerTwo] = useState(new Player());
   const [notes, setNotes] = useState([]);
   const [playheadTime, setPlayheadTime] = useState(0);
-  const [presetNotes, setPresetNotes] = useState([])
+  const [presentChords, setPresetChords] = useState([])
 
   useEffect(() => {
     player.setup();
     setPlayer(player);
     playerTwo.setupTwo();
     setPlayerTwo(playerTwo);
-    setPresetNotes(SampleChords)
+    setPresetChords(SampleChords)
     // console.log("set up")
     if (!interval) {
       setInterval(() => {
@@ -49,8 +49,9 @@ function App() {
   const NOTE_HEIGHT = 8
   const DURATION_FACTOR = 100
 
-  async function handleEvent(e){
-    await playerTwo.playChord(e.target.value);
+  async function onChordButton(chord){
+    // console.log(chord)
+    await playerTwo.playChord(chord.array);
   }
 
   async function handleKeyDown(e){
@@ -96,10 +97,10 @@ function App() {
       </div>
       {/* <div style={{backgroundColor:"yellow",position:"relative"}}> HELLO</div> */}
       <div className="App-preset-container">
-        {presetNotes.map((data)=> {
-          return <button className="App-preset" onClick={handleEvent} value={data.array} id={`${data.key}`} name={`${data.name}`} onKeyDown={handleKeyDown} >
-            <div style={{paddingTop:"2.5vw",fontSize:"1.25vw"}}>{data.name}</div>
-            <div style={{paddingTop:"1.25vw",fontSize:"1vw",color:"#E37B7B"}}>{data.key}</div>
+        {presentChords.map((chord)=> {
+          return <button className="App-preset" onClick={(e)=>onChordButton(chord)} id={`${chord.key}`} key={`${chord.key}`} name={`${chord.name}`} onKeyDown={handleKeyDown} >
+            <div style={{paddingTop:"2.5vw",fontSize:"1.25vw"}}>{chord.name}</div>
+            <div style={{paddingTop:"1.25vw",fontSize:"1vw",color:"#E37B7B"}}>{chord.key}</div>
           </button>
         })}
       </div>
