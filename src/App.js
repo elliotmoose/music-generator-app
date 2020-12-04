@@ -17,26 +17,27 @@ function App() {
   const [presentChords, setPresetChords] = useState([])
 
   useEffect(() => {
-    player.setup();
-    setPlayer(player);
-    playerTwo.setupTwo();
-    setPlayerTwo(playerTwo);
-    setPresetChords(SampleChords)
-    // console.log("set up")
-    if (!interval) {
-      setInterval(() => {
-        setPlayheadTime(Tone.context.currentTime * DURATION_FACTOR)
-      }, 10);
-    }
-  }, [playerTwo,player]);
+    (async ()=>{
+      await player.setup();
+      setPlayer(player);
+      await playerTwo.setup();
+      setPlayerTwo(playerTwo);
+      
+      setPresetChords(SampleChords)
+      // console.log("set up")
+      if (!interval) {
+        setInterval(() => {
+          setPlayheadTime(Tone.context.currentTime * DURATION_FACTOR)
+        }, 10);
+      }
+    })()
+  }, []); //on component mount
 
   useEffect(() => {
     if (play) {
-      player.setup();
-      setPlayer(player);
-      console.log("set up")
-      console.log("prepping notes");
       (async () => {
+        // await player.setup();
+        // setPlayer(player);
         setNotes(await player.notesFromMidiFile('ABeautifulFriendship.mid'));
         await player.playMidiFile('ABeautifulFriendship.mid');
       })()
@@ -68,7 +69,11 @@ function App() {
     <div className="App">
       <div className="App-header">
           <div style={{width:"20%",textTransform:"uppercase"}}>2.5K only<br></br> music generation <br></br> project</div>
-          <PlayBar onClickPlay={() => setPlay(true)} onClickPause={() => {setPlay(false)}} onClickStop={async ()=>{await player.stopMidiFile();setNotes([]);setPlay(false);}}></PlayBar>
+          <PlayBar onClickPlay={() => setPlay(true)} onClickPause={() => player.pausePlayback()} onClickStop={async ()=>{
+            await player.stopMidiFile();
+            setNotes([]);
+            setPlay(false);
+          }}></PlayBar>
           <div style={{width:"20%"}}></div>
 
       </div>

@@ -2,52 +2,37 @@ import * as Tone from 'tone'
 import { Midi } from '@tonejs/midi'
 
 export default class Player {
-    setup() {
-        Tone.start()
-        this.sampler = new Tone.Sampler({
-            urls: {
-                "C1": "C1.mp3",
-                "C2": "C2.mp3",
-                "C3": "C3.mp3",
-                "C4": "C4.mp3",
-                "D#4": "Ds4.mp3",
-                "F#4": "Fs4.mp3",
-                "A4": "A4.mp3",
-                "C5": "C5.mp3",
-                "C6": "C6.mp3",
-            },
-            baseUrl: "https://tonejs.github.io/audio/salamander/",
-        }).toDestination()
-    }
-
-    setupTwo(){
-        Tone.start()
-        this.sampler = new Tone.Sampler({
-            urls: {
-                "C1": "C1.mp3",
-                "C2": "C2.mp3",
-                "C3": "C3.mp3",
-                "C4": "C4.mp3",
-                "D#4": "Ds4.mp3",
-                "F#4": "Fs4.mp3",
-                "A4": "A4.mp3",
-                "C5": "C5.mp3",
-                "C6": "C6.mp3",
-            },
-            baseUrl: "https://tonejs.github.io/audio/salamander/",
-        }).toDestination()
+    async setup() {
+        return new Promise((resolve, reject) => {
+            Tone.start()
+            this.sampler = new Tone.Sampler({
+                urls: {
+                    "C1": "C1.mp3",
+                    "C2": "C2.mp3",
+                    "C3": "C3.mp3",
+                    "C4": "C4.mp3",
+                    "D#4": "Ds4.mp3",
+                    "F#4": "Fs4.mp3",
+                    "A4": "A4.mp3",
+                    "C5": "C5.mp3",
+                    "C6": "C6.mp3",
+                },
+                baseUrl: "https://tonejs.github.io/audio/salamander/",
+                onload: () => {
+                    console.log('Sampler Loaded!');
+                    resolve();
+                }
+            }).toDestination()
+        })
     }
 
     async notesFromMidiFile(fileName) {
         const midi = await Midi.fromUrl("/" + fileName);
         console.log(midi)
         let notes = []
-        let objTime = 0
         for (let track of midi.tracks) {
             for (let note of track.notes) {
                 //console.log('add note: ' + note.name)
-                objTime += note.time;
-                note.objTime = objTime;
                 notes.push(note);
             }
         }
@@ -77,9 +62,13 @@ export default class Player {
     async stopMidiFile() {
         console.log("cut music")
         await this.sampler.disconnect();
-        //await this.sampler.dispose();
+        // Tone.Transport.stop()
+        // await this.sampler.dispose();
     }
     
+    async pausePlayback() {
+        // await Tone.context.suspend()
+    }
     async playChord(notes){
         // console.log(notes); 
         this.sampler.triggerAttackRelease(notes,2);
