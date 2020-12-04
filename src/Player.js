@@ -63,8 +63,8 @@ export default class Player {
     // }
     async stopMidiFile() {
         console.log("cut music")
-        // await this.sampler.disconnect();
-        Tone.Transport.stop()
+        await this.sampler.disconnect();
+        // Tone.Transport.stop()
         // await this.sampler.dispose();
     }
     
