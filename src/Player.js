@@ -23,9 +23,11 @@ export default class Player {
                     resolve();
                 }
             }).toDestination();
-            
-            this.sampler.sync();
         })
+    }
+
+    sync() {
+        this.sampler.sync();
     }
 
     async notesFromMidiFile(fileName) {

@@ -19,6 +19,7 @@ function App() {
   useEffect(() => {
     (async ()=>{
       await player.setup();
+      player.sync();
       setPlayer(player);
       await playerTwo.setup();
       setPlayerTwo(playerTwo);
