@@ -27,7 +27,7 @@ function App() {
       // console.log("set up")
       if (!interval) {
         setInterval(() => {
-          setPlayheadTime(Tone.context.currentTime * DURATION_FACTOR)
+          setPlayheadTime(Tone.Transport.seconds * DURATION_FACTOR)
         }, 10);
       }
     })()

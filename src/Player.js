@@ -24,7 +24,7 @@ export default class Player {
                 }
             }).toDestination();
             
-            // this.sampler.sync();
+            this.sampler.sync();
         })
     }
 
@@ -43,6 +43,10 @@ export default class Player {
         return notes
     }
     async playMidiFile(fileName) {
+        if(Tone.context.state == 'suspended') {
+            Tone.start()
+        }
+
         let notes = await this.notesFromMidiFile(fileName)
         console.log(notes[0].name)
         console.log(notes[1].name)
@@ -52,6 +56,7 @@ export default class Player {
             // console.log('play note: ' + note.name)
         }
 
+        Tone.Transport.start()
     }
     // async pauseMidiFile(fileName) {
     //     let notes = []
@@ -63,13 +68,13 @@ export default class Player {
     // }
     async stopMidiFile() {
         console.log("cut music")
-        await this.sampler.disconnect();
-        // Tone.Transport.stop()
+        // await this.sampler.disconnect();
+        Tone.Transport.stop()
         // await this.sampler.dispose();
     }
     
     async pausePlayback() {
-        // await Tone.context.suspend()
+        Tone.Transport.pause()
     }
     async playChord(notes){
         // console.log(notes); 
