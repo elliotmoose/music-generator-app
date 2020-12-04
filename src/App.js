@@ -54,11 +54,11 @@ function App() {
     await playerTwo.playChord(chord.array);
   }
 
-  async function handleKeyDown(e){
+  async function onChordKey(e,chord){
     console.log(e.key);
     if(e.key === e.target.id){
       console.log(e.target.name)
-      await playerTwo.playChord(e.target.value);
+      await playerTwo.playChord(chord.array);
     }
   }
 
@@ -98,7 +98,7 @@ function App() {
       {/* <div style={{backgroundColor:"yellow",position:"relative"}}> HELLO</div> */}
       <div className="App-preset-container">
         {presentChords.map((chord)=> {
-          return <button className="App-preset" onClick={(e)=>onChordButton(chord)} id={`${chord.key}`} key={`${chord.key}`} name={`${chord.name}`} onKeyDown={handleKeyDown} >
+          return <button className="App-preset" onClick={(e)=>onChordButton(chord)} id={`${chord.key}`} key={`${chord.key}`} name={`${chord.name}`} onKeyDown={(e)=>{onChordKey(e,chord)}} >
             <div style={{paddingTop:"2.5vw",fontSize:"1.25vw"}}>{chord.name}</div>
             <div style={{paddingTop:"1.25vw",fontSize:"1vw",color:"#E37B7B"}}>{chord.key}</div>
           </button>
