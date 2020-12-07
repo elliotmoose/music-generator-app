@@ -3,7 +3,7 @@ export default class Recorder
     constructor() {
         this.bpm = 120;
         this.timeSlice = 1/(this.bpm*4/60); //time slice - time of 16th notes
-        this.windowLength = 30; //number of time slices
+        this.windowLength = 100; //number of time slices
         this.slices = [];
         this.currentChord = null;
 

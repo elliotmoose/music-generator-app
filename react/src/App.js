@@ -49,13 +49,10 @@ function App() {
 				}, 50);
 			}
 
+
 			recorder.onFinishRecording = async (result)=>{
 				setRecording(false);
-				//trigger generation
-				//retrieve generation
-				//begin playback
-				// let midiFileUrl = await model.initial(result);
-				let midiFile = await player.midiFileFromUrl('/ABeautifulFriendship.mid');
+				let midiFile = await model.generateFromUserInput(result);
 				let playbackNotes = player.notesFromMidiFile(midiFile);
 				player.addNotes(playbackNotes);
 				setNotes(notes=>[...notes, ...playbackNotes]);
@@ -115,7 +112,7 @@ function App() {
 						if(Tone.context.state == 'suspended') {
 							Tone.start()
 						}
-						
+
 						Tone.Transport.start()				
 					}}
 					onClickPause={() => player.pausePlayback()}
@@ -124,6 +121,10 @@ function App() {
 						setNotes([]);
 					}}
 					onClickRecord={() => {
+						if(Tone.context.state == 'suspended') {
+							Tone.start()
+						}
+
 						Tone.Transport.start()
 						recorder.startRecording();
 						setRecording(true);
