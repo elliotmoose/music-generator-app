@@ -30,35 +30,32 @@ export default class Player {
         this.sampler.sync();
     }
 
-    async notesFromMidiFile(fileName) {
-        const midi = await Midi.fromUrl("/" + fileName);
-        console.log(midi)
+    async midiFileFromUrl(url) {
+        const midi = await Midi.fromUrl(url);
+        return midi;
+    }
+
+    notesFromMidiFile(midiFile) {
         let notes = []
-        for (let track of midi.tracks) {
+        for (let track of midiFile.tracks) {
             for (let note of track.notes) {
                 //console.log('add note: ' + note.name)
                 notes.push(note);
             }
         }
 
-        
         return notes
     }
-    async playMidiFile(fileName) {
-        if(Tone.context.state == 'suspended') {
-            Tone.start()
-        }
 
-        let notes = await this.notesFromMidiFile(fileName)
-        console.log(notes[0].name)
-        console.log(notes[1].name)
-        console.log(notes[2].name)
+    async addNotes(notes) {
         for (let note of notes) {
             this.sampler.triggerAttackRelease([note.name], note.duration, note.time, note.velocity);
-            // console.log('play note: ' + note.name)
         }
+        // if(Tone.context.state == 'suspended') {
+        //     Tone.start()
+        // }
 
-        Tone.Transport.start()
+        // Tone.Transport.start()
     }
     // async pauseMidiFile(fileName) {
     //     let notes = []
@@ -106,5 +103,13 @@ export default class Player {
     async playChord(notes){
         // console.log(notes); 
         this.sampler.triggerAttackRelease(notes,2);
+    }
+    async triggerChordAttack(notes){
+        // console.log(notes); 
+        this.sampler.triggerAttack(notes);
+    }
+    async triggerChordRelease(notes){
+        // console.log(notes); 
+        this.sampler.triggerRelease(notes);
     }
 }
