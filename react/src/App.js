@@ -13,8 +13,7 @@ import Model from './Model';
 let interval;
 function App() {
 	let SampleChords = data.sampleChords
-	const [play, setPlay] = useState(false)
-	const [recording, setRecording] = useState(false)
+	const [recording, setRecording] = useState(false);
 	const [player, setPlayer] = useState(new Player());
 	const [playerTwo, setPlayerTwo] = useState(new Player());
 	const [recorder, setRecorder] = useState(new Recorder());
@@ -64,21 +63,6 @@ function App() {
 		})()
 	}, []); //on component mount
 
-	useEffect(() => {
-		if (play) {
-			(async () => {
-				// await player.setup();
-				// setPlayer(player);
-				let midiFile = await player.midiFileFromUrl('/ABeautifulFriendship.mid');
-				let notes = player.notesFromMidiFile(midiFile);
-				player.addNotes(notes);
-				setNotes(notes);
-			})()
-
-			setPlay(false);
-		}
-	}, [play, player])
-
 	const MAX_MIDI = 88
 	const NOTE_HEIGHT = 8
 	const DURATION_FACTOR = 100
@@ -120,12 +104,24 @@ function App() {
 			<div className="App-header">
 				<div style={{ width: "20%", textTransform: "uppercase" }}>2.5K only<br></br> music generation <br></br> project</div>
 				<PlayBar
-					onClickPlay={() => setPlay(true)}
+					onClickPlay={async () => {
+						if(notes.length == 0) {
+							let midiFile = await player.midiFileFromUrl('/ABeautifulFriendship.mid');
+							let notes = player.notesFromMidiFile(midiFile);
+							player.addNotes(notes);
+							setNotes(notes);
+						}
+
+						if(Tone.context.state == 'suspended') {
+							Tone.start()
+						}
+						
+						Tone.Transport.start()				
+					}}
 					onClickPause={() => player.pausePlayback()}
 					onClickStop={async () => {
 						await player.stopMidiFile();
 						setNotes([]);
-						setPlay(false);
 					}}
 					onClickRecord={() => {
 						Tone.Transport.start()
