@@ -38,7 +38,7 @@ def load_dictionaries(dir):
 
     return combi_to_int, int_to_combi, vocab, all_song_tokenised
 
-def generateFromTokenSequence(token_sequence, num_note_to_gen):    
+def generateFromTokenSequence(model, token_sequence, num_note_to_gen):    
     tokens_generated = []
 
     while len(tokens_generated) <= num_note_to_gen:
@@ -52,20 +52,21 @@ def generateFromTokenSequence(token_sequence, num_note_to_gen):
 
     return tokens_generated
 
-def testStartTokens():
+def testStartPianoRoll():
     song_piano_roll = np.load('./encoded_SmallDay.npy').astype(np.int8)
-    song_token_sequence = helpers.pianoRollToTokenSequence(song_piano_roll, combi_to_int)
-    start_tokens = song_token_sequence[:sequence_length]
-
-    return start_tokens
+    return song_piano_roll
 
 combi_to_int, int_to_combi, vocab, all_song_tokenised = load_dictionaries('./dictionaries')
 model = load_model()
 
-start_tokens = testStartTokens()
+song_piano_roll = testStartPianoRoll()
+song_token_sequence = helpers.pianoRollToTokenSequence(song_piano_roll, combi_to_int)
+start_tokens = song_token_sequence[:sequence_length]
 helpers.tokenSequenceToMidi(start_tokens, int_to_combi, bpm).write('./outputs/gpt_original.mid')
 
-generated_tokens = generateFromTokenSequence(start_tokens, 10)
+generated_tokens = generateFromTokenSequence(model, start_tokens, 10)
 generated_with_start = start_tokens + generated_tokens
+
+
 helpers.tokenSequenceToMidi(generated_tokens, int_to_combi, bpm).write('./outputs/gpt_generated.mid')
 helpers.tokenSequenceToMidi(generated_with_start, int_to_combi, bpm).write('./outputs/gpt_generated_w_start.mid')
