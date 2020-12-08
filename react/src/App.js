@@ -93,6 +93,7 @@ function App() {
 
 	return (
 		<div className="App">
+			<div style={{position: 'absolute', top: 10, right: 20, color: 'tomato'}}>{recorder.windowLength - recorder.slices.length}</div>
 			<div className="App-header">
 				<div style={{ width: "20%", textTransform: "uppercase" }}>2.5K only<br></br> music generation <br></br> project</div>
 				<PlayBar
