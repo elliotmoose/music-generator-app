@@ -36,6 +36,10 @@ class Model:
 
         print('== Dictionaries Loaded!')
 
+    def generateMidiBytesFromCombiSequence(self, combi_sequence, num_note_to_gen):    
+        token_sequence = helpers.combiSequenceToTokenSequence(combi_sequence, self.combi_to_int)
+        return self.generateMidiBytesFromTokenSequence(token_sequence, num_note_to_gen)
+
     def generateMidiBytesFromPianoRollSequence(self, piano_roll_sequence, num_note_to_gen):    
         token_sequence = helpers.pianoRollToTokenSequence(piano_roll_sequence, self.combi_to_int)
         return self.generateMidiBytesFromTokenSequence(token_sequence, num_note_to_gen)
@@ -54,7 +58,7 @@ class Model:
             tokens_generated.append(sample_token)
             token_sequence.append(sample_token)
         
-        print(f"generated {len(tokens_generated)} notes")
+            print(f"generated {len(tokens_generated)} notes")
 
         # return tokens_generated
         pretty_midi_file = helpers.tokenSequenceToMidi(tokens_generated, self.int_to_combi, bpm)

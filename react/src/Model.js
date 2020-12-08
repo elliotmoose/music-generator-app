@@ -15,6 +15,9 @@ export default class Model {
         let response = await axios({            
             url,
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             responseType: 'arraybuffer',
             data: {
                 recorded_result

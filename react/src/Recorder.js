@@ -45,7 +45,26 @@ export default class Recorder
 
         if(this.onFinishRecording) {
             let result = this.slices;
-            this.onFinishRecording(result);
+            //convert slices to parsable midi combination tuples
+
+            let tuples = []
+            for(let slice of result) {
+                //rest
+                if(!slice) {
+                    tuples.push([])
+                    continue;
+                }
+
+                let tuple = []
+                for(let note of slice.array) {
+                    let midi = noteStringToMidi(note)
+                    tuple.push(midi)
+                }
+
+                tuples.push(tuple)
+            }
+
+            this.onFinishRecording(tuples);
         }
     }
 
