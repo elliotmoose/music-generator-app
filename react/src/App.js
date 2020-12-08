@@ -52,6 +52,8 @@ function App() {
 
 			recorder.onFinishRecording = async (result)=>{
 				setRecording(false);
+				Tone.Transport.stop()
+				console.log(result)
 				let midiFile = await model.generateFromUserInput(result);
 				let playbackNotes = player.notesFromMidiFile(midiFile);
 				player.addNotes(playbackNotes);
@@ -88,13 +90,6 @@ function App() {
 		Mousetrap.bind(chord.key, () => onChordUp(chord), 'keyup');
 	}
 
-	async function onChordKey(e, chord) {
-		console.log(e.key);
-		if (e.key === e.target.id) {
-			console.log(e.target.name)
-			await playerTwo.playChord(chord.array);
-		}
-	}
 
 	return (
 		<div className="App">
@@ -121,30 +116,36 @@ function App() {
 						setNotes([]);
 					}}
 					onClickRecord={() => {
-						if(Tone.context.state == 'suspended') {
-							Tone.start()
-						}
+						// if(Tone.context.state == 'suspended') {
+						// 	Tone.start()
+						// }
 
-						Tone.Transport.start()
+						Tone.Transport.start() //to start time
 						recorder.startRecording();
 						setRecording(true);
+					
 					}}
+					onClickRecordStop={() => {
+						recorder.finishRecording();
+						
+					}}
+					recordingState = {recording}
 				/>
 				<div style={{ width: "20%" }}></div>
 			</div>
 			{/* <button onClick={() => setPlay(true)}>begin</button>    */}
 
-			<div style={{height: '100%', width: 4, position: 'absolute', left: 500, top: 0, backgroundColor: 'white', zIndex: 999}}/>
 			{/* {notes.map((note, i) => {
-        // const noteDescription = `${note.name} note: ${note.midi} dur:${note.duration} time:${note.time}`
-        const noteDescription = `${note.name}`
-        return <div
-          key={`${i}`}
-          style={{ position: 'absolute', left: note.time * DURATION_FACTOR - playheadTime, top: MAX_MIDI * NOTE_HEIGHT - note.midi * NOTE_HEIGHT, width: note.duration * DURATION_FACTOR, height: NOTE_HEIGHT, backgroundColor: 'tomato' }}
-        >{noteDescription}</div>
-      }
-      )} */}
+				// const noteDescription = `${note.name} note: ${note.midi} dur:${note.duration} time:${note.time}`
+				const noteDescription = `${note.name}`
+				return <div
+				key={`${i}`}
+				style={{ position: 'absolute', left: note.time * DURATION_FACTOR - playheadTime, top: MAX_MIDI * NOTE_HEIGHT - note.midi * NOTE_HEIGHT, width: note.duration * DURATION_FACTOR, height: NOTE_HEIGHT, backgroundColor: 'tomato' }}
+				>{noteDescription}</div>
+			}
+		)} */}
 			<div className="App-piano">
+				<div style={{height: '100%', width: 6, position: 'absolute', left: 500, top: 0, backgroundColor: 'white', zIndex: 999}}/>
 				{notes.map((note, i) => {
 					let recorded = note.recorded || false;
 					// let offset = recording ? 0 : playheadTime
