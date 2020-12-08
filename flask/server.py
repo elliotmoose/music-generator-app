@@ -1,11 +1,15 @@
 from flask import Flask
 import flask
 from flask_cors import CORS, cross_origin
+import model
+
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 app = Flask(__name__)
+
+model.load_model()
 
 @app.route('/generate_from_user_input', methods=['POST'])
 @cross_origin()
@@ -25,3 +29,8 @@ def generate_next_chunk():
     """
 
     return flask.send_file('./AbeautifulFriendship.mid', as_attachment=True, attachment_filename='generated.mid')
+
+
+
+if __name__ == '__main__':
+    app.run()
