@@ -1,10 +1,7 @@
 import { Midi } from '@tonejs/midi';
 import axios from 'axios';
-const server = 'http://localhost:5000'
 
-// export function sendInitial() {
-//     let url = server + '/initial'
-// }
+const server = 'http://localhost:5000'
 
 export default class Model {
 
