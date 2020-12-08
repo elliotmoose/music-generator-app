@@ -89,7 +89,7 @@ def piano_roll_to_pretty_midi(piano_roll_in, fs, program=0, velocity = 64, bpm=1
     return pm
 
 
-def prettyMidiToMidiBytes(pretty_midi_file):    
+def prettyMidiToBytesIO(pretty_midi_file):    
     buffer = io.BytesIO()
     pretty_midi_file.write(buffer)
-    return buffer.getvalue()
+    return buffer
