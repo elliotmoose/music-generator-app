@@ -5,6 +5,7 @@ import numpy as np
 import random
 import pretty_midi
 from sklearn.preprocessing import MultiLabelBinarizer
+import io
 
 def sample_from(logits, k):
     logits, indices = tf.math.top_k(logits, k= k, sorted=True)
@@ -86,3 +87,9 @@ def piano_roll_to_pretty_midi(piano_roll_in, fs, program=0, velocity = 64, bpm=1
             prev_velocities[note] = 0
     pm.instruments.append(instrument)
     return pm
+
+
+def prettyMidiToMidiBytes(pretty_midi_file):    
+    buffer = io.BytesIO()
+    pretty_midi_file.write(buffer)
+    return buffer.getvalue()
