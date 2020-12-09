@@ -35,12 +35,17 @@ export default class Player {
         return midi;
     }
 
-    notesFromMidiFile(midiFile) {
+    notesFromMidiFile(midiFile, timeOffset=0) {
         let notes = []
         for (let track of midiFile.tracks) {
             for (let note of track.notes) {
-                //console.log('add note: ' + note.name)
-                notes.push(note);
+                notes.push({
+                    time: note.time + timeOffset,
+                    name: note.name,
+                    duration: note.duration,
+                    velocity: note.velocity,
+                    midi: note.midi
+                });
             }
         }
 
@@ -51,20 +56,8 @@ export default class Player {
         for (let note of notes) {
             this.sampler.triggerAttackRelease([note.name], note.duration, note.time, note.velocity);
         }
-        // if(Tone.context.state == 'suspended') {
-        //     Tone.start()
-        // }
-
-        // Tone.Transport.start()
     }
-    // async pauseMidiFile(fileName) {
-    //     let notes = []
-    //     for (let note of notes) {
-    //         this.sampler.triggerAttackRelease([note.name], note.duration, note.time, note.velocity);
-    //         console.log('play note: ' + note.name)
-    //     }
 
-    // }
     async stopMidiFile() {
        return new Promise((resolve, reject) => {
             console.log("cut music")

@@ -54,10 +54,19 @@ function App() {
 				setRecording(false);
 				Tone.Transport.stop()
 				console.log(result)
-				let midiFile = await model.receiveUserInput(result);
+				let midiFile = await model.userInputToMidi(result);
 				let playbackNotes = player.notesFromMidiFile(midiFile);
 				player.addNotes(playbackNotes);
-				setNotes(notes=>[...notes, ...playbackNotes]);
+				console.log(playbackNotes)
+				
+				setInterval(async () => {
+					let {midi: generatedMidiFile, slicesBeforeGenerated } = await model.generateNext();
+					let timeOffset = slicesBeforeGenerated * recorder.timeSlice;
+					let generatedNotes = player.notesFromMidiFile(generatedMidiFile, timeOffset);					
+					player.addNotes(generatedNotes);
+					setNotes(notes=>[...notes, ...generatedNotes]);									
+				}, 2000);
+				setNotes(notes=>[...notes, ...playbackNotes]);									
 			};
 		})()
 	}, []); //on component mount
@@ -113,7 +122,7 @@ function App() {
 					}}
 					onClickPause={() => player.pausePlayback()}
 					onClickStop={async () => {
-						await player.stopMidiFile();
+						await player.stopMidiFile();						
 						setNotes([]);
 					}}
 					onClickRecord={() => {
@@ -122,6 +131,8 @@ function App() {
 						// }
 
 						Tone.Transport.start() //to start time
+						recorder.reset();
+						model.reset();
 						recorder.startRecording();
 						setRecording(true);
 					

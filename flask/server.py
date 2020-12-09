@@ -95,7 +95,7 @@ def token_sequence_to_midi():
 @cross_origin()
 def generate_next_token_sequence():
     token_sequence = request.json['token_sequence']
-    generated_token_sequence = model.generateTokenSequenceFromTokenSequence(token_sequence, chunk_duration)
+    generated_token_sequence = model.generateTokenSequenceFromTokenSequence(token_sequence, 10)
     return Response(json.dumps(generated_token_sequence),  mimetype='application/json')
     # return generated_token_sequence
 

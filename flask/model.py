@@ -8,7 +8,7 @@ import pretty_midi
 import glob
 from sklearn.preprocessing import MultiLabelBinarizer
 
-sequence_length = 300
+chunk_duration = 300
 bpm = 140
 
 class Model:
@@ -55,14 +55,24 @@ class Model:
         return helpers.prettyMidiToBytesIO(pretty_midi_file)
 
     def generateTokenSequenceFromTokenSequence(self, token_sequence, num_note_to_gen):    
+
+        if len(token_sequence) > chunk_duration:
+            token_sequence = token_sequence[:chunk_duration]
+        
+        if len(token_sequence) < chunk_duration:
+            #pad sequences
+            print(f"sequence has length {len(token_sequence)}. adding padding...")
+            while len(token_sequence) < chunk_duration:
+                token_sequence.insert(0, self.combi_to_int[tuple([])])
+
         tokens_generated = []
 
         while len(tokens_generated) <= num_note_to_gen:
-            x = token_sequence[-sequence_length:]
+            x = token_sequence[-chunk_duration:]
             x = np.array([x])
             y, _ = self.model.predict(x)
             sample_token = helpers.sample_from(y[0][-1], 10)
-            tokens_generated.append(sample_token)
+            tokens_generated.append(int(sample_token))
             token_sequence.append(sample_token)
         
             print(f"generated {len(tokens_generated)} notes")

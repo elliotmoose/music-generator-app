@@ -8,13 +8,39 @@ export default class Model {
 
     constructor() {
         this.lastTokenSequence = []
+        this.fullTokenSequence = []
     }
 
-    async receiveUserInput(userInput) {
+    async userInputToMidi(userInput) {
         let token_sequence = await this.userCombiToTokenSequence(userInput);
         this.lastTokenSequence = token_sequence;
-        let userInputMidi = await this.tokenSequenceToMidi(token_sequence);
+        this.fullTokenSequence = token_sequence;
+        let userInputMidi = await this.tokenSequenceToMidi(token_sequence);        
         return userInputMidi;
+    }
+
+    async generateNext() {
+        let sliceOffsetCount = this.fullTokenSequence.length; //the slice count before it was generated
+        let generatedTokenSequence = await this.generateNextTokenSequence();
+        let generatedMidi = await this.tokenSequenceToMidi(generatedTokenSequence);
+        return {
+            midi: generatedMidi,
+            tokens: generatedTokenSequence,
+            slicesBeforeGenerated: sliceOffsetCount
+        };
+    }
+
+    async generateNextTokenSequence() {
+        if(this.lastTokenSequence.length == 0) {
+            console.error('Last token sequence missing. Please record first')
+        }
+
+        let window = 300
+        let refTokenSequence = this.fullTokenSequence.length >= window ? this.fullTokenSequence.slice(this.fullTokenSequence.length-window) : this.fullTokenSequence; //if the full length is too short, just send the short one and let server side pad
+        let generatedTokenSequence = await this.generateTokenSequenceFromTokenSequence(refTokenSequence)
+        this.fullTokenSequence = [...this.fullTokenSequence, ...generatedTokenSequence]; //append token sequence
+        this.lastTokenSequence = generatedTokenSequence;
+        return generatedTokenSequence;
     }
     
     async userCombiToTokenSequence(user_combi) {
@@ -47,6 +73,7 @@ export default class Model {
 
         if(response.status == 200 && response.data) {
             let midiFile = new Midi(response.data)
+            console.log(midiFile)
             this.lastMidiChunk = midiFile;
             return midiFile;
         }
@@ -55,7 +82,8 @@ export default class Model {
         return null;
     }
 
-    async generateNextTokenSequence(last_token_sequence) {
+    async generateTokenSequenceFromTokenSequence(last_token_sequence) {
+        
         let response = await axios({            
             url: server + '/generate_next_token_sequence',
             method: 'POST',
@@ -66,10 +94,16 @@ export default class Model {
 
         if(response.status == 200 && response.data) {
             let token_sequence = response.data;
+            console.log(token_sequence)
             return token_sequence;
         }
 
         console.error('tokenSequenceToGeneratedTokenSequence: invalid response from server');
         return null;
+    }
+
+    reset() {
+        this.lastTokenSequence = []
+        this.fullTokenSequence = []
     }
 }

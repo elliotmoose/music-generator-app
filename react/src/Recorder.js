@@ -10,6 +10,11 @@ export default class Recorder
         //callbacks 
         this.onFinishRecording = null;
     }
+
+    reset() {
+        this.slices = [];
+        this.currentChord = null;
+    }
     
     onChordPressed(chord) {
         this.currentChord = chord;
@@ -24,7 +29,6 @@ export default class Recorder
     startRecording() {
         console.log('started recording!')
         this.recording = true;
-        this.slices = [];
 
         //start slice tracking clock
         this.interval = setInterval(() => {
