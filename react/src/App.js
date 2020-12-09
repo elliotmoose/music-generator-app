@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Player from './Player';
 import * as Tone from 'tone'
 import PlayBar from './components/Playbar'
+import Insturction from './components/Instructions'
 import data from './public/data'
 import Recorder from './Recorder';
 import Mousetrap from 'mousetrap'
@@ -188,7 +189,8 @@ function App() {
 					}}
 					recordingState = {recording}
 				/>
-				<div style={{ width: "20%" }}></div>
+				{/* <div style={{ width: "20%" }}></div> */}
+				<Insturction></Insturction>
 			</div>
 			{/* <button onClick={() => setPlay(true)}>begin</button>    */}
 

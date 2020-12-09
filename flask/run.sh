@@ -1,3 +1,3 @@
 export FLASK_APP=server.py
 export FLASK_ENV=development
-python3.6 -m flask run
+python3 -m flask run
