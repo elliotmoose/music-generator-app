@@ -16,6 +16,7 @@ function App() {
 	const [recording, setRecording] = useState(false);
 	const [initializingGeneration, setInitializingGeneration] = useState(false);
 	const [isGenerating, setIsGenerating] = useState(false);
+	const [loadingText, setLoadingText] = useState('WAKING A.I. UP...\n');
 	const [player, setPlayer] = useState(new Player());
 	const [playerTwo, setPlayerTwo] = useState(new Player());
 	const [recorder, setRecorder] = useState(new Recorder());
@@ -53,6 +54,17 @@ function App() {
 
 
 			recorder.onFinishRecording = async (result)=>{
+				const time_interval = 1250
+				let timeout = setTimeout(() => {
+					setLoadingText(text => text+'BRUSHING TEETH...\n')
+					timeout = setTimeout(() => {
+						setLoadingText(text=> text+'ALMOST READY...\n')						
+						timeout = setTimeout(() => {
+							setLoadingText(text=> text+'DESTROYING GPUs...\n')							
+						}, time_interval);
+					}, time_interval);
+				}, time_interval);
+
 				setRecording(false);
 				Tone.Transport.stop()
 				setIsGenerating(true)
@@ -71,6 +83,9 @@ function App() {
 				setNotes(notes=>[...notes, ...playbackNotes, ...generatedNotes]);			
 				setInitializingGeneration(false);
 
+				clearTimeout(timeout)
+				setLoadingText('WAKING A.I. UP...\n')
+
 				for(let i=0; i<999; i++) {
 					let {midi: generatedMidiFile, slicesBeforeGenerated } = await model.generateNext();
 					let timeOffset = slicesBeforeGenerated * recorder.timeSlice;
@@ -88,6 +103,7 @@ function App() {
 						break;
 					}
 				}
+				
 			};
 		})()
 	}, []); //on component mount
@@ -147,21 +163,25 @@ function App() {
 						setIsGenerating(false);
 						setNotes([]);
 					}}
-					onClickRecord={() => {
-						// if(Tone.context.state == 'suspended') {
-						// 	Tone.start()
-						// }
-
-						Tone.Transport.start() //to start time
+					onClickRecord={async () => {
+						//reset
 						recorder.reset();
 						model.reset();
+						await player.stopMidiFile();						
+						setIsGenerating(false);
+						setNotes([]);
+
+						Tone.Transport.start() //to start time
 						recorder.startRecording();
 						setRecording(true);
 					
 					}}
 					onClickRecordStop={() => {
-						recorder.finishRecording();
-						
+						recorder.finishRecording();						
+					}}
+					onClickRewind={() => {
+						Tone.Transport.pause()
+						Tone.Transport.seconds = 0
 					}}
 					recordingState = {recording}
 				/>
@@ -179,10 +199,10 @@ function App() {
 			}
 		)} */}
 			<div className="App-piano">				
-				{initializingGeneration && <div style={{height: '100%', width: '100%', position: 'absolute',left: 0, top: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'column'}}>
-					<div style={{height: '100%', width: '100%', position: 'absolute',left: 0, top: 0, backgroundColor: '#888888', opacity: 0.3}}/>
-					<CircularProgress color='secondary' size={30}/>
-					<h1 style={{color: '#7Ec291'}}>A.I. IS WAKING UP</h1>
+				{initializingGeneration && <div style={{height: '100%', width: '100%', position: 'absolute',left: 0, top: 0, zIndex: 1000, display: 'flex'}}>
+					<div style={{height: '100%', width: '100%', position: 'absolute',left: 0, top: 0, backgroundColor: 'black', opacity: 0.3, zIndex: 10}}/>
+					<p style={{position: 'absolute', whiteSpace: 'pre-wrap', left: 50, top: 6, fontSize: 12, fontFamily: 'monospace', color: '#7Ec291', zIndex: 50}}>{loadingText}</p>
+					<CircularProgress color='primary' size={14} style={{marginLeft: 12, marginTop: 20}}/>
 				</div>}
 				<div style={{height: '100%', width: 6, position: 'absolute', left: 500, top: 0, backgroundColor: 'white', zIndex: 999, borderRadius: 3}}/>
 				{notes.map((note, i) => {
@@ -196,7 +216,7 @@ function App() {
 					let offset = playheadTime - 500
 					return <div
 						key={`${i}`}
-						style={{ position: "absolute", left: note.time * DURATION_FACTOR - offset, top: MAX_MIDI * NOTE_HEIGHT - note.midi * NOTE_HEIGHT, width: note.duration * DURATION_FACTOR, height: NOTE_HEIGHT, backgroundColor: isFar ? 'orange' : recorded ? 'tomato' : '#7Ec291' }}
+						style={{ position: "absolute", left: note.time * DURATION_FACTOR - offset, top: MAX_MIDI * NOTE_HEIGHT - note.midi * NOTE_HEIGHT, width: note.duration * DURATION_FACTOR, height: NOTE_HEIGHT, backgroundColor: recorded ? 'tomato' : '#7Ec291' }}
 					></div>
 				}
 				)}

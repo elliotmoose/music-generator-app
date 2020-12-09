@@ -3,6 +3,7 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import Pause from '@material-ui/icons/Pause';
 import Stop from '@material-ui/icons/Stop';
 import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
+import FastRewind from '@material-ui/icons/FastRewind';
 
 import React from 'react'
 // import { useMediaQuery } from 'react-responsive'
@@ -21,6 +22,9 @@ export default function PlayBar(props){
             </IconButton>
             <IconButton disabled={props.recordingState} onClick={props.onClickStop} className="material-icons play-button">
                 <Stop style={{width: '4vw', height: '4vw', fill: 'white'}}/>
+            </IconButton>
+            <IconButton disabled={props.recordingState} onClick={props.onClickRewind} className="material-icons play-button">
+                <FastRewind style={{width: '4vw', height: '4vw', fill: 'white'}}/>
             </IconButton>
             <IconButton onClick={props.onClickRecord} className="material-icons play-button">
                 <FiberManualRecord style={{width: '4vw', height: '4vw', fill: props.recordingState ? '#c4302b': '#E37B7B'}}/>
