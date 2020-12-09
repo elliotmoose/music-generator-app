@@ -48,6 +48,13 @@ class Model:
         """
         @return in midi file bytes
         """
+        tokens_generated = self.generateTokenSequenceFromTokenSequence(token_sequence, num_note_to_gen)
+
+        # return tokens_generated
+        pretty_midi_file = helpers.tokenSequenceToMidi(tokens_generated, self.int_to_combi, bpm)
+        return helpers.prettyMidiToBytesIO(pretty_midi_file)
+
+    def generateTokenSequenceFromTokenSequence(self, token_sequence, num_note_to_gen):    
         tokens_generated = []
 
         while len(tokens_generated) <= num_note_to_gen:
@@ -59,10 +66,16 @@ class Model:
             token_sequence.append(sample_token)
         
             print(f"generated {len(tokens_generated)} notes")
+        return tokens_generated
 
-        # return tokens_generated
-        pretty_midi_file = helpers.tokenSequenceToMidi(tokens_generated, self.int_to_combi, bpm)
+    def combiSequenceToMidiBytes(self, combi_sequence):
+        token_sequence = helpers.combiSequenceToTokenSequence(combi_sequence, self.combi_to_int)
+        pretty_midi_file = helpers.tokenSequenceToMidi(token_sequence, self.int_to_combi, bpm)
         return helpers.prettyMidiToBytesIO(pretty_midi_file)
+
+
+
+
 
 # model = Model()
 # song_piano_roll = np.load('./encoded_SmallDay.npy').astype(np.int8)

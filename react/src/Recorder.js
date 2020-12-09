@@ -1,9 +1,9 @@
 export default class Recorder
 {
     constructor() {
-        this.bpm = 120;
+        this.bpm = 140;
         this.timeSlice = 1/(this.bpm*4/60); //time slice - time of 16th notes
-        this.windowLength = 300; //number of time slices
+        this.windowLength = 20; //number of time slices
         this.slices = [];
         this.currentChord = null;
 

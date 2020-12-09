@@ -54,7 +54,7 @@ function App() {
 				setRecording(false);
 				Tone.Transport.stop()
 				console.log(result)
-				let midiFile = await model.generateFromUserInput(result);
+				let midiFile = await model.receiveUserInput(result);
 				let playbackNotes = player.notesFromMidiFile(midiFile);
 				player.addNotes(playbackNotes);
 				setNotes(notes=>[...notes, ...playbackNotes]);
@@ -146,7 +146,7 @@ function App() {
 			}
 		)} */}
 			<div className="App-piano">
-				<div style={{height: '100%', width: 6, position: 'absolute', left: 500, top: 0, backgroundColor: 'white', zIndex: 999}}/>
+				<div style={{height: '100%', width: 6, position: 'absolute', left: 500, top: 0, backgroundColor: 'white', zIndex: 999, borderRadius: 3}}/>
 				{notes.map((note, i) => {
 					let recorded = note.recorded || false;
 					// let offset = recording ? 0 : playheadTime
