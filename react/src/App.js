@@ -61,6 +61,9 @@ function App() {
 						setLoadingText(text=> text+'ALMOST READY...\n')						
 						timeout = setTimeout(() => {
 							setLoadingText(text=> text+'DESTROYING GPUs...\n')							
+							timeout = setTimeout(() => {
+								setLoadingText(text=> text+'MAKING MUSIC...\n')							
+							}, time_interval);
 						}, time_interval);
 					}, time_interval);
 				}, time_interval);
