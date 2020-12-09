@@ -73,7 +73,6 @@ export default class Model {
 
         if(response.status == 200 && response.data) {
             let midiFile = new Midi(response.data)
-            console.log(midiFile)
             this.lastMidiChunk = midiFile;
             return midiFile;
         }
@@ -94,7 +93,6 @@ export default class Model {
 
         if(response.status == 200 && response.data) {
             let token_sequence = response.data;
-            console.log(token_sequence)
             return token_sequence;
         }
 

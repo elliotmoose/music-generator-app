@@ -1,7 +1,8 @@
+const bpm = 120 
 export default class Recorder
 {
     constructor() {
-        this.bpm = 140;
+        this.bpm = bpm;
         this.timeSlice = 1/(this.bpm*4/60); //time slice - time of 16th notes
         this.windowLength = 20; //number of time slices
         this.slices = [];
@@ -97,7 +98,7 @@ export default class Recorder
                     time: i*this.timeSlice,
                     duration: this.timeSlice,
                     midi,
-                    recorded: true
+                    user: true
                 })
             });
         })

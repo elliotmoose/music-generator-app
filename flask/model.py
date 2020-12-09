@@ -9,12 +9,13 @@ import glob
 from sklearn.preprocessing import MultiLabelBinarizer
 
 chunk_duration = 300
-bpm = 140
+bpm = 120
 
 class Model:
     def __init__(self):
-        self.load_model('./model/')
-        self.load_dictionaries('./dictionaries')
+        dir = './model'
+        self.load_model(dir)
+        self.load_dictionaries(dir)
 
     def load_model(self, dir):
         self.model = tf.keras.models.load_model(dir)
@@ -27,12 +28,6 @@ class Model:
         
         with open(dir + '/int_to_combi.pickle', 'rb') as f:
             self.int_to_combi = pickle.load(f)
-            
-        with open(dir + '/vocab.pickle', 'rb') as f:
-            self.vocab = pickle.load(f)
-            
-        with open(dir + '/all_song_tokenised.pickle', 'rb') as f:
-            self.all_song_tokenised = pickle.load(f)
 
         print('== Dictionaries Loaded!')
 

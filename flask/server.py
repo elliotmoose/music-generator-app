@@ -17,7 +17,7 @@ app = Flask(__name__)
 # ========================================
 model = Model()
 chunk_duration = 300 #300 slices per chunk. user input must be 300, generated will be 300
-
+bpm = 120
 # @app.route('/generate_from_user_input', methods=['GET', 'POST'])
 # @cross_origin()
 # def generate_from_user_input():    
@@ -85,7 +85,7 @@ def user_combi_to_token_sequence():
 @cross_origin()
 def token_sequence_to_midi():
     token_sequence = request.json['token_sequence']
-    pretty_midi_file = helpers.tokenSequenceToMidi(token_sequence, model.int_to_combi, 140)
+    pretty_midi_file = helpers.tokenSequenceToMidi(token_sequence, model.int_to_combi, bpm)
     midiBytesIO = helpers.prettyMidiToBytesIO(pretty_midi_file)
     midiBytesIO.seek(0)
     return flask.send_file(midiBytesIO, as_attachment=True, attachment_filename='token_sequence_to_midi.mid')
@@ -95,7 +95,8 @@ def token_sequence_to_midi():
 @cross_origin()
 def generate_next_token_sequence():
     token_sequence = request.json['token_sequence']
-    generated_token_sequence = model.generateTokenSequenceFromTokenSequence(token_sequence, 10)
+    print(f'received last {len(token_sequence)} tokens')
+    generated_token_sequence = model.generateTokenSequenceFromTokenSequence(token_sequence, 40)
     return Response(json.dumps(generated_token_sequence),  mimetype='application/json')
     # return generated_token_sequence
 

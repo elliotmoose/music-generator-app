@@ -37,7 +37,7 @@ def tokenSequenceToMidi(token_sequence, int_to_combi, bpm):
     mid_out = piano_roll_to_pretty_midi(piano_roll.T, fs=frequency, bpm=bpm)
     return mid_out
 
-def piano_roll_to_pretty_midi(piano_roll_in, fs, program=0, velocity = 64, bpm=140):
+def piano_roll_to_pretty_midi(piano_roll_in, fs, program=0, velocity = 64, bpm=100):
     '''Convert a Piano Roll array into a PrettyMidi object
      with a single instrument.
     Parameters

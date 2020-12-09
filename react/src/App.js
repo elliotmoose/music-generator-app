@@ -7,13 +7,15 @@ import data from './public/data'
 import Recorder from './Recorder';
 import Mousetrap from 'mousetrap'
 import Model from './Model';
-
+import { CircularProgress, Button, withTheme }  from '@material-ui/core'
 
 
 let interval;
 function App() {
 	let SampleChords = data.sampleChords
 	const [recording, setRecording] = useState(false);
+	const [initializingGeneration, setInitializingGeneration] = useState(false);
+	const [isGenerating, setIsGenerating] = useState(false);
 	const [player, setPlayer] = useState(new Player());
 	const [playerTwo, setPlayerTwo] = useState(new Player());
 	const [recorder, setRecorder] = useState(new Recorder());
@@ -53,20 +55,39 @@ function App() {
 			recorder.onFinishRecording = async (result)=>{
 				setRecording(false);
 				Tone.Transport.stop()
-				console.log(result)
+				setIsGenerating(true)
+				setInitializingGeneration(true);
 				let midiFile = await model.userInputToMidi(result);
 				let playbackNotes = player.notesFromMidiFile(midiFile);
+				for(let note of playbackNotes) {
+					note.user = true
+				}
 				player.addNotes(playbackNotes);
-				console.log(playbackNotes)
 				
-				setInterval(async () => {
+				let {midi: generatedMidiFile, slicesBeforeGenerated } = await model.generateNext();
+				let timeOffset = slicesBeforeGenerated * recorder.timeSlice;
+				let generatedNotes = player.notesFromMidiFile(generatedMidiFile, timeOffset);					
+				player.addNotes(generatedNotes);					
+				setNotes(notes=>[...notes, ...playbackNotes, ...generatedNotes]);			
+				setInitializingGeneration(false);
+
+				for(let i=0; i<999; i++) {
 					let {midi: generatedMidiFile, slicesBeforeGenerated } = await model.generateNext();
 					let timeOffset = slicesBeforeGenerated * recorder.timeSlice;
 					let generatedNotes = player.notesFromMidiFile(generatedMidiFile, timeOffset);					
 					player.addNotes(generatedNotes);
 					setNotes(notes=>[...notes, ...generatedNotes]);									
-				}, 2000);
-				setNotes(notes=>[...notes, ...playbackNotes]);									
+					let shouldStop = false;
+					setIsGenerating(isGenerating => {
+						shouldStop = !isGenerating;
+						return isGenerating;
+					})
+
+					if(shouldStop) {
+						console.log("Stopped Generating!")
+						break;
+					}
+				}
 			};
 		})()
 	}, []); //on component mount
@@ -123,6 +144,7 @@ function App() {
 					onClickPause={() => player.pausePlayback()}
 					onClickStop={async () => {
 						await player.stopMidiFile();						
+						setIsGenerating(false);
 						setNotes([]);
 					}}
 					onClickRecord={() => {
@@ -156,15 +178,25 @@ function App() {
 				>{noteDescription}</div>
 			}
 		)} */}
-			<div className="App-piano">
+			<div className="App-piano">				
+				{initializingGeneration && <div style={{height: '100%', width: '100%', position: 'absolute',left: 0, top: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'column'}}>
+					<div style={{height: '100%', width: '100%', position: 'absolute',left: 0, top: 0, backgroundColor: '#888888', opacity: 0.3}}/>
+					<CircularProgress color='secondary' size={30}/>
+					<h1 style={{color: '#7Ec291'}}>A.I. IS WAKING UP</h1>
+				</div>}
 				<div style={{height: '100%', width: 6, position: 'absolute', left: 500, top: 0, backgroundColor: 'white', zIndex: 999, borderRadius: 3}}/>
 				{notes.map((note, i) => {
-					let recorded = note.recorded || false;
+					let isFar = Math.abs(note.time * DURATION_FACTOR - playheadTime) > 2000;
+					if(isFar) {
+						return null;
+					}
+
+					let recorded = note.user || false;
 					// let offset = recording ? 0 : playheadTime
 					let offset = playheadTime - 500
 					return <div
 						key={`${i}`}
-						style={{ position: "absolute", left: note.time * DURATION_FACTOR - offset, top: MAX_MIDI * NOTE_HEIGHT - note.midi * NOTE_HEIGHT, width: note.duration * DURATION_FACTOR, height: NOTE_HEIGHT, backgroundColor: recorded ? 'tomato' : '#7Ec291' }}
+						style={{ position: "absolute", left: note.time * DURATION_FACTOR - offset, top: MAX_MIDI * NOTE_HEIGHT - note.midi * NOTE_HEIGHT, width: note.duration * DURATION_FACTOR, height: NOTE_HEIGHT, backgroundColor: isFar ? 'orange' : recorded ? 'tomato' : '#7Ec291' }}
 					></div>
 				}
 				)}
@@ -191,4 +223,4 @@ function App() {
 	);
 }
 
-export default App;
+export default App
